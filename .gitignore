@@ -33,6 +33,10 @@ docs/_book
 
 output.json
 
+# local env files
+.env.local
+.env.*.local
+
 # TODO: where does this rule come from?
 test/
 
