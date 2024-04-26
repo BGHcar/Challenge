@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -9,13 +8,11 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"sync"
-
+	"bytes"
 	"github.com/joho/godotenv"
 )
 
 var count int = 0 // Contador de correos procesados
-var wg sync.WaitGroup
 
 // Definición de la estructura Metadata
 type Metadata struct {
@@ -70,37 +67,33 @@ func main() {
 
 		// Verificar si el archivo no es un directorio y no tiene extensión
 		if !info.IsDir() && filepath.Ext(info.Name()) == "" {
-			wg.Add(1)
-			go func(path string) {
-				defer wg.Done()
-				// Leer el contenido del archivo
-				content, err := ioutil.ReadFile(path)
-				if err != nil {
-					fmt.Printf("Error al leer el archivo %s: %v\n", path, err)
-					return
-				}
+			// Leer el contenido del archivo
+			content, err := ioutil.ReadFile(path)
+			if err != nil {
+				return err
+			}
 
-				// Procesar el contenido del archivo como correo electrónico
-				email := procesarCorreo(string(content))
+			// Procesar el contenido del archivo como correo electrónico
+			email := procesarCorreo(string(content))
 
-				// Incrementar el contador de correos procesados
-				count++
+			// Incrementar el contador de correos procesados
+			count++
 
-				// Crear un objeto EmailData con el correo electrónico obtenido
-				emailData := EmailData{
-					Index:   "EmailData",
-					Records: []Email{email},
-				}
+			// Crear un objeto EmailData con el correo electrónico obtenido
+			emailData := EmailData{
+				Index:   "EmailData",
+				Records: []Email{email}, // Aquí cambia email a []Email{email}
+			}
+			
 
-				// Convertir el objeto EmailData a formato JSON
-				jsonData, err := json.MarshalIndent(emailData, "", "    ")
-				if err != nil {
-					fmt.Printf("Error al convertir a JSON el correo %s: %v\n", path, err)
-					return
-				}
+			// Convertir el objeto EmailData a formato JSON
+			jsonData, err := json.MarshalIndent(emailData, "", "    ")
+			if err != nil {
+				fmt.Println("Error al convertir a JSON:", err)
+				return err
+			}
 
-				sendDataToZincSearch(jsonData) // Enviar el correo electrónico a ZincSearch
-			}(path)
+			sendDataToZincSearch(jsonData) // Enviar el correo electrónico a ZincSearch
 		}
 		return nil
 	})
@@ -110,7 +103,6 @@ func main() {
 		return
 	}
 
-	wg.Wait() // Esperar a que todas las goroutines finalicen
 	fmt.Printf("Total de emails procesados : %d\n", count) // Imprimir el total de correos procesados
 }
 
@@ -128,35 +120,35 @@ func procesarCorreo(content string) Email {
 			value := parts[1]
 			switch key {
 			case "Message-ID":
-				email.MessageID = value
+				email.MessageID = fmt.Sprintf(value)
 			case "Date":
-				email.Date = value
+				email.Date = fmt.Sprintf(value)
 			case "From":
-				email.From = value
+				email.From = fmt.Sprintf(value)
 			case "To":
-				email.To = value
+				email.To = fmt.Sprintf(value)
 			case "Subject":
-				email.Subject = value
+				email.Subject = fmt.Sprintf(value)
 			case "Mime-Version":
-				email.Metadata.MimeVersion = value
+				email.Metadata.MimeVersion = fmt.Sprintf(value)
 			case "Content-Type":
-				email.Metadata.ContentType = value
+				email.Metadata.ContentType = fmt.Sprintf(value)
 			case "Content-Transfer-Encoding":
-				email.Metadata.ContentTransferEncoding = value
+				email.Metadata.ContentTransferEncoding = fmt.Sprintf(value)
 			case "X-From":
-				email.Metadata.XFrom = value
+				email.Metadata.XFrom = fmt.Sprintf(value)
 			case "X-To":
-				email.Metadata.XTo = value
+				email.Metadata.XTo = fmt.Sprintf(value)
 			case "X-cc":
-				email.Metadata.XCc = value
+				email.Metadata.XCc = fmt.Sprintf(value)
 			case "X-bcc":
-				email.Metadata.XBcc = value
+				email.Metadata.XBcc = fmt.Sprintf(value)
 			case "X-Folder":
-				email.Metadata.XFolder = value
+				email.Metadata.XFolder = fmt.Sprintf(value)
 			case "X-Origin":
-				email.Metadata.XOrigin = value
+				email.Metadata.XOrigin = fmt.Sprintf(value)
 			case "X-FileName":
-				email.Metadata.XFileName = value
+				email.Metadata.XFileName = fmt.Sprintf(value)
 			default:
 				// Ignorar otras líneas que no corresponden a los campos deseados
 			}
@@ -167,10 +159,11 @@ func procesarCorreo(content string) Email {
 	}
 
 	// El cuerpo del correo es el contenido restante
-	email.Body = strings.Join(lines, "\n")
+	email.Body = fmt.Sprintf(strings.Join(lines, "\n"))
 
 	return email
 }
+
 
 // Función para enviar el correo electrónico a ZincSearch
 func sendDataToZincSearch(email []byte) {
@@ -179,6 +172,7 @@ func sendDataToZincSearch(email []byte) {
 	password := os.Getenv("ZINC_PASSWORD")
 
 	// Crear una solicitud HTTP POST con el JSON de emailData
+	fmt.Println("Enviando correo numero ", count, " a ZincSearch")
 	req, err := http.NewRequest("POST", apiURL, bytes.NewBuffer(email))
 	if err != nil {
 		fmt.Println("Error al crear la solicitud HTTP:", err)
