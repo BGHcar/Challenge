@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -8,8 +9,10 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"bytes"
+	"time"
+
 	"github.com/joho/godotenv"
+	_ "net/http/pprof"
 )
 
 var count int = 0 // Contador de correos procesados
@@ -46,6 +49,8 @@ type EmailData struct {
 }
 
 func main() {
+	start := time.Now() // Iniciar el temporizador
+
 	// Cargar las variables de entorno desde el archivo .env
 	if err := godotenv.Load(); err != nil {
 		fmt.Println("Error cargando el archivo .env:", err)
@@ -58,6 +63,14 @@ func main() {
 		fmt.Println("Variable de entorno PATH_DIRECTION no encontrada en el archivo .env")
 		return
 	}
+
+	fmt.Println("Procesando correos electrónicos en la carpeta:", ruta)
+
+	// Iniciar el servidor HTTP para pprof
+	go func() {
+		fmt.Println("Perfilado de pprof está disponible en http://localhost:6060/debug/pprof/")
+		http.ListenAndServe("localhost:6060", nil)
+	}()
 
 	// Recorrer de manera recursiva la carpeta y leer los archivos
 	err := filepath.Walk(ruta, func(path string, info os.FileInfo, err error) error {
@@ -81,10 +94,9 @@ func main() {
 
 			// Crear un objeto EmailData con el correo electrónico obtenido
 			emailData := EmailData{
-				Index:   "EmailData",
+				Index:   "ProfilingTester",
 				Records: []Email{email}, // Aquí cambia email a []Email{email}
 			}
-			
 
 			// Convertir el objeto EmailData a formato JSON
 			jsonData, err := json.MarshalIndent(emailData, "", "    ")
@@ -103,7 +115,9 @@ func main() {
 		return
 	}
 
-	fmt.Printf("Total de emails procesados : %d\n", count) // Imprimir el total de correos procesados
+	elapsed := time.Since(start) // Calcular el tiempo transcurrido
+	fmt.Printf("Tiempo total de indexación: %s\n", elapsed) // Imprimir el tiempo total de indexación
+	fmt.Printf("Total de emails procesados : %d\n", count)  // Imprimir el total de correos procesados
 }
 
 // Función para procesar el contenido del archivo como un correo electrónico
@@ -164,7 +178,6 @@ func procesarCorreo(content string) Email {
 	return email
 }
 
-
 // Función para enviar el correo electrónico a ZincSearch
 func sendDataToZincSearch(email []byte) {
 	apiURL := os.Getenv("API_URL")
@@ -172,7 +185,6 @@ func sendDataToZincSearch(email []byte) {
 	password := os.Getenv("ZINC_PASSWORD")
 
 	// Crear una solicitud HTTP POST con el JSON de emailData
-	fmt.Println("Enviando correo numero ", count, " a ZincSearch")
 	req, err := http.NewRequest("POST", apiURL, bytes.NewBuffer(email))
 	if err != nil {
 		fmt.Println("Error al crear la solicitud HTTP:", err)
