@@ -1,1 +1,42 @@
-# Challenge
+Indexador de Correos Electrónicos
+Este proyecto es una solución para el desafío técnico de indexar una base de datos de correos electrónicos y proporcionar una interfaz para buscar información dentro de ella.
+
+Descripción del Proyecto
+El objetivo de este proyecto es crear una aplicación que indexe el contenido de una base de datos de correos electrónicos utilizando ZincSearch y proporcione una interfaz para buscar y visualizar la información de manera eficiente.
+
+Estructura del Proyecto
+backend: Contiene el código del backend de la aplicación.
+database: Contiene el código para indexar la base de datos de correos electrónicos.
+frontend: Contiene el código del frontend de la aplicación.
+Tecnologías Utilizadas
+Lenguaje Backend: Go
+Base de Datos: ZincSearch
+API Router: chi
+Interfaz de Usuario: Vue 3
+CSS: Tailwind
+Instrucciones de Uso
+Instalación
+Backend
+bash
+Copy code
+# Instalar dependencias del backend
+cd backend
+go mod tidy
+Frontend
+bash
+Copy code
+# Instalar dependencias del frontend
+cd frontend
+npm install
+Ejecutar Backend
+bash
+Copy code
+cd backend
+go run main.go
+Ejecutar Frontend
+bash
+Copy code
+cd frontend
+npm run serve
+Contribución
+Siéntete libre de contribuir a este proyecto mediante la creación de nuevas funciones, corrección de errores o mejoras en el rendimiento. Simplemente abre un problema o envía una solicitud de extracción en este repositorio.
