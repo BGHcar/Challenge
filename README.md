@@ -1,6 +1,6 @@
 # Indexador de Correos Electrónicos
 
-Este proyecto es una solución para el desafío técnico de indexar una base de datos de correos electrónicos y proporcionar una interfaz para buscar información dentro de ella.
+Este proyecto es una solución para el desafío de indexar una base de datos de correos electrónicos y proporcionar una interfaz para buscar información dentro de ella.
 
 ## Descripción del Proyecto
 
