@@ -24,24 +24,31 @@ Backend
 Instalar dependencias del backend
 ```
 cd backend
+```
+```
 go mod tidy
-
 ```
 Frontend
 Instalar dependencias del frontend
 ```
 cd frontend
+```
+```
 npm install
 ```
+
 Ejecutar Backend
 ```
 cd backend
+```
+```
 go run main.go
 ```
+
 Ejecutar Frontend
 ```
 cd frontend
+```
+```
 npm run serve
 ```
-Contribución
-Siéntete libre de contribuir a este proyecto mediante la creación de nuevas funciones, corrección de errores o mejoras en el rendimiento. Simplemente abre un problema o envía una solicitud de extracción en este repositorio.
