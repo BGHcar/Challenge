@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
-	_ "net/http/pprof"
+	_ "net/http/pprof"  // Importar el paquete pprof
 )
 
 var count int = 0 // Contador de correos procesados
@@ -66,7 +66,7 @@ func main() {
 
 	fmt.Println("Procesando correos electrónicos en la carpeta:", ruta)
 
-	// Iniciar el servidor HTTP para pprof
+	// Iniciar el servidor HTTP para pprof en segundo plano para el perfilado de la aplicación con pprof en http://localhost:6060/debug/pprof/
 	go func() {
 		fmt.Println("Perfilado de pprof está disponible en http://localhost:6060/debug/pprof/")
 		http.ListenAndServe("localhost:6060", nil)
@@ -94,7 +94,7 @@ func main() {
 
 			// Crear un objeto EmailData con el correo electrónico obtenido
 			emailData := EmailData{
-				Index:   "ProfilingTester",
+				Index:   "EmailData",
 				Records: []Email{email}, // Aquí cambia email a []Email{email}
 			}
 
