@@ -18,27 +18,27 @@ El objetivo de este proyecto es crear una aplicación que indexe el contenido de
 
 # Instrucciones de Uso
 
-# Instalación
+Instalación
 
-# Backend
+Backend
 Instalar dependencias del backend
 ```
 cd backend
 go mod tidy
 
 ```
-# Frontend
+Frontend
 Instalar dependencias del frontend
 ```
 cd frontend
 npm install
 ```
-# Ejecutar Backend
+Ejecutar Backend
 ```
 cd backend
 go run main.go
 ```
-# Ejecutar Frontend
+Ejecutar Frontend
 ```
 cd frontend
 npm run serve
