@@ -1,4 +1,4 @@
-# frontend
+# app-zihc
 
 ## Project setup
 ```

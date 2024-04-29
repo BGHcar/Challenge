@@ -57,12 +57,16 @@ func main() {
 		return
 	}
 
+	
+
 	// Obtener la ruta de la carpeta desde la variable de entorno
 	ruta := os.Getenv("PATH_DIRECTION")
 	if ruta == "" {
 		fmt.Println("Variable de entorno PATH_DIRECTION no encontrada en el archivo .env")
 		return
 	}
+
+	indexName := os.Getenv("INDEX_NAME")
 
 	fmt.Println("Procesando correos electrónicos en la carpeta:", ruta)
 
@@ -94,7 +98,7 @@ func main() {
 
 			// Crear un objeto EmailData con el correo electrónico obtenido
 			emailData := EmailData{
-				Index:   "EmailData",
+				Index:   indexName,
 				Records: []Email{email}, // Aquí cambia email a []Email{email}
 			}
 
