@@ -96,7 +96,7 @@ func SearchEmail(w http.ResponseWriter, r *http.Request) {
 
 		// Crear una instancia de Email y agregarla a la lista de correos electrónicos
 		email := Models.Email{
-			Id:     _id,
+			Id:      _id,
 			From:    from,
 			To:      to,
 			Subject: subject,
@@ -112,16 +112,6 @@ func SearchEmail(w http.ResponseWriter, r *http.Request) {
 
 // SearchEmail realiza una búsqueda de emails
 func SearchAllEmails(w http.ResponseWriter, r *http.Request) {
-	// Decodificar el JSON del cuerpo de la solicitud
-	var requestData map[string]string
-	if err := json.NewDecoder(r.Body).Decode(&requestData); err != nil {
-		http.Error(w, "Error al decodificar el JSON", http.StatusBadRequest)
-		return
-	}
-
-	// Obtener el valor del parámetro 'term'
-	term := requestData["term"]
-
 	// Cargar variables de entorno
 	loadEnv()
 
@@ -133,16 +123,12 @@ func SearchAllEmails(w http.ResponseWriter, r *http.Request) {
 
 	query := fmt.Sprintf(`{
         "search_type": "alldocuments",
-        "query":
-        {
-            "term": "%s"
-        },
         "from": 0,
         "max_results": 20,
         "_source": [
             "_id", "From", "To", "Subject", "body"
         ]
-    }`, term)
+    }`)
 
 	req, err := http.NewRequest("POST", apiURL+indexName+"/_search", strings.NewReader(query))
 	if err != nil {
@@ -181,7 +167,7 @@ func SearchAllEmails(w http.ResponseWriter, r *http.Request) {
 
 		// Crear una instancia de Email y agregarla a la lista de correos electrónicos
 		email := Models.Email{
-			Id:     _id,
+			Id:      _id,
 			From:    from,
 			To:      to,
 			Subject: subject,
@@ -198,16 +184,9 @@ func SearchAllEmails(w http.ResponseWriter, r *http.Request) {
 func DeleteEmail(w http.ResponseWriter, r *http.Request) {
 	// Código para eliminar un correo electrónico
 
-	// Api  /api/myindex/_doc/1
-	// myindex : EmailData, _doc : Iddocumento
-
 	//Obtener el id del correo a eliminar
-	id := chi.URLParam(r, "id") //http://localhost:3030/delete/27RkVr834Yw 		sería	27RkVr834Yw
+	id := chi.URLParam(r, "id")
 
-	//res 404 page not found
-	//http://localhost:3030/delete/1		sería	1
-
-	//un ejemplo de id es 1		sería
 	//Imprimir el id del correo a eliminar
 	fmt.Println(id)
 

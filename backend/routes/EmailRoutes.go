@@ -9,5 +9,5 @@ import (
 func SetEmailRoutes(r *chi.Mux) {
     r.Post("/search", Controllers.SearchEmail) // Fixed function call
     r.Delete("/delete/{id}", Controllers.DeleteEmail) // Added missing function call
-    r.Post("/searchall", Controllers.SearchAllEmails) // Added missing function call
+    r.Get("/searchall", Controllers.SearchAllEmails) // Added missing function call
 }

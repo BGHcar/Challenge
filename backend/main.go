@@ -15,6 +15,6 @@ func main() {
     routes.SetEmailRoutes(r)
 
     // Iniciar el servidor
-    fmt.Println("Servidor iniciado en el puerto :3030")
-    http.ListenAndServe(":3030", r)
+    fmt.Println("Servidor iniciado en el puerto : http://localhost:9000")
+    http.ListenAndServe(":9000", r)
 }

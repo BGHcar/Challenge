@@ -1,34 +1,41 @@
 <template>
-  <table
-    class="min-w-full divide-y divide-gray-200 mt-2 border border-gray-300 shadow-lg"
-  >
-    <thead class="bg-gray-50">
-      <tr class="text-center">
-        <th
-          class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-        >
-          From
-        </th>
-        <th
-          class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-        >
-          To
-        </th>
-        <th
-          class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-        >
-          Subject
-        </th>
-      </tr>
-    </thead>
-    <tbody class="bg-white divide-y divide-gray-200">
-      <tr v-for="(item, index) in items" :key="index">
-        <td class="px-6 py-4 whitespace-nowrap">{{ item.email }}</td>
-        <td class="px-6 py-4 whitespace-nowrap">{{ item.email }}</td>
-        <td class="px-6 py-4 whitespace-nowrap">{{ item.name }}</td>
-      </tr>
-    </tbody>
-  </table>
+  <div>
+    <table class="text-[12px] divide-gray-200 mt-2 border border-gray-300 shadow-lg h-full w-full">
+      <!-- Encabezado de la tabla -->
+      <thead class="bg-gray-50">
+        <tr class="text-center">
+          <th class="px-3 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">
+            From
+          </th>
+          <th class="px-3 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">
+            To
+          </th>
+          <th class="px-3 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">
+            Subject
+          </th>
+          <th class="px-3 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">
+            Actions
+          </th>
+        </tr>
+      </thead>
+      <!-- Cuerpo de la tabla -->
+      <tbody class="bg-white divide-y divide-gray-200">
+        <tr v-for="(item, index) in items" :key="index">
+          <td class="px-6 py-4  whitespace-nowrap">{{ item.email }}</td>
+          <td class="px-6 py-4 whitespace-nowrap">{{ item.email }}</td>
+          <td class="px-6 py-4 whitespace-nowrap">{{ item.name }}</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <button class="bg-blue-500 hover:bg-blue-700 text-black font-bold py-2 px-6 rounded mr-4">
+              VIEW
+            </button>
+            <button class="bg-red-500 hover:bg-red-700 text-black font-bold py-2 px-6 rounded">
+              DELETE
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </template>
 
 <script>
