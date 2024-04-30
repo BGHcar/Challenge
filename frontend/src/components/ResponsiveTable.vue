@@ -4,7 +4,7 @@
       <!-- Encabezado de la tabla -->
       <thead class="bg-gray-50">
         <tr class="text-center">
-          <th class="px-3 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">
+          <th class="ml-10 px-3 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">
             From
           </th>
           <th class="px-3 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">
@@ -20,7 +20,7 @@
       </thead>
       <!-- Cuerpo de la tabla -->
       <tbody class="bg-white divide-y divide-gray-200">
-        <tr v-for="(item, index) in items" :key="index">
+        <tr class=" hover:bg-indigo-200" v-for="(item, index) in items" :key="index">
           <td class="px-6 py-4  whitespace-nowrap">{{ item.email }}</td>
           <td class="px-6 py-4 whitespace-nowrap">{{ item.email }}</td>
           <td class="px-6 py-4 whitespace-nowrap">{{ item.name }}</td>

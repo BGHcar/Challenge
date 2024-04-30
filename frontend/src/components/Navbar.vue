@@ -2,19 +2,18 @@
 
 <template>
   <nav
-    class="relative flex flex-wrap items-center justify-between px-2 py-3 bg-indigo-500 mb-3"
+    class="flex px-2 py-3 bg-indigo-500 mb-3"
   >
     <div
-      class="container px-4 mx-auto flex flex-wrap items-center justify-between"
+      class="container px-4 flex flex-wrap items-center justify-between"
     >
       <div
-        class="w-full relative flex justify-between lg:w-auto px-4 lg:static lg:block lg:justify-start"
+        class="w-full relative flex lg:w-auto lg:static lg:block lg:justify-start"
       >
         <a
-          class="text-sm font-bold leading-relaxed inline-block mr-4 py-2 whitespace-nowrap uppercase text-white"
-          href="#pablo"
+          class="text-sm font-bold leading-relaxed inline-block mr-4 whitespace-nowrap uppercase text-white"
         >
-          <h1 class="text-sm font-bold text-gray-800 text-xl">
+          <h1 class="text-white text-xl">
             Carta Searcher
           </h1>
         </a>

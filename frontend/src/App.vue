@@ -1,7 +1,7 @@
 <template>
   <NavBar />
   <SearchComponent />
-  <div class="flex flex-col gap-2 mt-2 p-2 md:flex md:flex-row bg-zinc-600 h-full">
+  <div class="flex flex-col gap-2 mt-2 p-2 mine:flex mine:flex-row h-full">
     <ResponsiveTable/>
     <BodyComponent/>
 
