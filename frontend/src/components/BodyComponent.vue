@@ -1,12 +1,9 @@
 <template>
-    <div>
-        <main class="text-[12px] divide-gray-200 mt-2 border border-gray-300 shadow-lg h-full mb-8 w-full flex-grow min-h-96">
-            <h2 class="text-2xl font-bold text-center">Main Content</h2>
-            <section class="m-6">
-                Lorem ipsum, dolor sit amet consectetur adipisicing elit. Excepturi laborum, voluptas nobis qui
-                provident
-                iste, hic dolor rem reprehenderit nisi illo dignissimos voluptatem porro ullam maxime perferendis
-                praesentium reiciendis quasi.
+    <div class="relative flex h-full w-full flex-col bg-red-800">
+        <main class="flex text-[12px] divide-gray-200 mt-2 border border-gray-300 shadow-lg h-full mb-8 w-full grow">
+            <h2 class="text-2xl font-bold text-center">Data</h2>
+            <section class="m-6 bg-slate-500 h-[100%]">
+
             </section>
 
 
