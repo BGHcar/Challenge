@@ -4,7 +4,7 @@ export default {
   theme: {
     extend: {
       screens: {
-        'mine': '980px',
+        'mine': '1080px',
       },
     },
   },

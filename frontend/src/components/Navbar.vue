@@ -2,7 +2,7 @@
 
 <template>
   <nav
-    class="flex px-2 py-3 bg-indigo-500 mb-3"
+    class="flex px-2 py-3 bg-indigo-500 mb-3 min-w-[100%]"
   >
     <div
       class="container px-4 flex flex-wrap items-center justify-between"

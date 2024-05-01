@@ -1,6 +1,6 @@
 <template>
   <form class="w-full px-4" @submit.prevent="handleSubmit">
-    <div class="relative">
+    <div>
       <input type="text" name="q"
         class="w-full border h-12 shadow p-4 rounded-full dark:text-gray-800 dark:border-gray-700 dark:bg-gray-200"
         placeholder="search" v-model="query" />
