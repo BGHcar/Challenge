@@ -55,7 +55,7 @@ func SearchEmail(w http.ResponseWriter, r *http.Request) {
         "from": 0,
         "max_results": 20,
         "_source": [
-            "_id", "From", "To", "Subject", "body"
+            "_id", "From", "To", "Subject","Metadata", "Message"
         ]
     }`, term)
 
@@ -92,7 +92,8 @@ func SearchEmail(w http.ResponseWriter, r *http.Request) {
 		from := source["From"].(string)
 		to := source["To"].(string)
 		subject := source["Subject"].(string)
-		body := source["body"].(string)
+		Metadata := source["Metadata"].(map[string]interface{})
+		Message := source["Message"].(string)
 
 		// Crear una instancia de Email y agregarla a la lista de correos electrónicos
 		email := Models.Email{
@@ -100,7 +101,20 @@ func SearchEmail(w http.ResponseWriter, r *http.Request) {
 			From:    from,
 			To:      to,
 			Subject: subject,
-			Body:    body,
+			Metadata: Models.Metadata{
+				MimeVersion:             Metadata["Mime-Version"].(string),
+				ContentType:             Metadata["Content-Type"].(string),
+				ContentTransferEncoding: Metadata["Content-Transfer-Encoding"].(string),
+				XFrom:                   Metadata["X-From"].(string),
+				XTo:                     Metadata["X-To"].(string),
+				XCc:                     Metadata["X-cc"].(string),
+				XBcc:                    Metadata["X-bcc"].(string),
+				XFolder:                 Metadata["X-Folder"].(string),
+				XOrigin:                 Metadata["X-Origin"].(string),
+				XFileName:               Metadata["X-FileName"].(string),
+			},
+			
+			Message:    Message,
 		}
 		emails = append(emails, email)
 	}
@@ -126,7 +140,7 @@ func SearchAllEmails(w http.ResponseWriter, r *http.Request) {
         "from": 0,
         "max_results": 20,
         "_source": [
-            "_id", "From", "To", "Subject", "body"
+            "_id", "From", "To", "Subject","Metadata", "Message"
         ]
     }`)
 
@@ -163,7 +177,8 @@ func SearchAllEmails(w http.ResponseWriter, r *http.Request) {
 		from := source["From"].(string)
 		to := source["To"].(string)
 		subject := source["Subject"].(string)
-		body := source["body"].(string)
+		Metadata := source["Metadata"].(map[string]interface{})
+		Message := source["Message"].(string)
 
 		// Crear una instancia de Email y agregarla a la lista de correos electrónicos
 		email := Models.Email{
@@ -171,7 +186,19 @@ func SearchAllEmails(w http.ResponseWriter, r *http.Request) {
 			From:    from,
 			To:      to,
 			Subject: subject,
-			Body:    body,
+			Metadata: Models.Metadata{
+				MimeVersion:             Metadata["Mime-Version"].(string),
+				ContentType:             Metadata["Content-Type"].(string),
+				ContentTransferEncoding: Metadata["Content-Transfer-Encoding"].(string),
+				XFrom:                   Metadata["X-From"].(string),
+				XTo:                     Metadata["X-To"].(string),
+				XCc:                     Metadata["X-cc"].(string),
+				XBcc:                    Metadata["X-bcc"].(string),
+				XFolder:                 Metadata["X-Folder"].(string),
+				XOrigin:                 Metadata["X-Origin"].(string),
+				XFileName:               Metadata["X-FileName"].(string),
+			},
+			Message:    Message,
 		}
 		emails = append(emails, email)
 	}

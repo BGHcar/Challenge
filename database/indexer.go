@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
-	_ "net/http/pprof"  // Importar el paquete pprof
+	_ "net/http/pprof" // Importar el paquete pprof
 )
 
 var count int = 0 // Contador de correos procesados
@@ -39,13 +39,13 @@ type Email struct {
 	To        string   `json:"To"`
 	Subject   string   `json:"Subject"`
 	Metadata  Metadata `json:"Metadata"`
-	Body      string   `json:"body"`
+	Message   string   `json:"Message"`
 }
 
 // Definición de la estructura principal para el correo electrónico
 type EmailData struct {
-	Index   string `json:"index"`
-	Records []Email  `json:"records"`
+	Index   string  `json:"index"`
+	Records []Email `json:"records"`
 }
 
 func main() {
@@ -56,8 +56,6 @@ func main() {
 		fmt.Println("Error cargando el archivo .env:", err)
 		return
 	}
-
-	
 
 	// Obtener la ruta de la carpeta desde la variable de entorno
 	ruta := os.Getenv("PATH_DIRECTION")
@@ -119,7 +117,7 @@ func main() {
 		return
 	}
 
-	elapsed := time.Since(start) // Calcular el tiempo transcurrido
+	elapsed := time.Since(start)                            // Calcular el tiempo transcurrido
 	fmt.Printf("Tiempo total de indexación: %s\n", elapsed) // Imprimir el tiempo total de indexación
 	fmt.Printf("Total de emails procesados : %d\n", count)  // Imprimir el total de correos procesados
 }
@@ -131,7 +129,7 @@ func procesarCorreo(content string) Email {
 
 	// Crear un nuevo objeto Email y asignar los valores de los campos
 	email := Email{}
-	for _, line := range lines {
+	for i, line := range lines {
 		parts := strings.SplitN(line, ": ", 2)
 		if len(parts) == 2 {
 			key := parts[0]
@@ -172,15 +170,14 @@ func procesarCorreo(content string) Email {
 			}
 		} else if len(parts) == 1 && parts[0] == "" {
 			// Una línea en blanco indica el fin de los metadatos y el comienzo del cuerpo del correo
+			email.Message = strings.Join(lines[i+1:], "\n")
 			break
 		}
 	}
 
-	// El cuerpo del correo es el contenido restante
-	email.Body = fmt.Sprintf(strings.Join(lines, "\n"))
-
 	return email
 }
+
 
 // Función para enviar el correo electrónico a ZincSearch
 func sendDataToZincSearch(email []byte) {
