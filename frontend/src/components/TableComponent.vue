@@ -88,7 +88,7 @@
 <script>
 export default {
   name: 'TableComponent',
-  props: ['items'], // Recibe los datos de la tabla como prop
+  props: ['items'], // Recibe los datos de la tabla como prop 'items' desde el componente padre (PageComponent)
   data() {
     return {
       showModal: false, // Controla la visibilidad del modal

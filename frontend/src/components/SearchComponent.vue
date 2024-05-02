@@ -1,5 +1,5 @@
 <template>
-  <form class="w-full px-4" @submit.prevent="isSearchin">
+  <form class="w-full px-4" @submit.prevent="isSearching">
     <div>
       <input type="text" name="q"
         class="w-full border h-12 shadow p-4 rounded-full dark:text-gray-800 dark:border-gray-700 dark:bg-gray-200"
@@ -37,8 +37,9 @@ export default {
     }
   },
   methods: {
-    async isSearchin() {
+    async isSearching() {
       this.booleanSearch = true;
+      this.$emit('searching', true) // Emitir el evento para actualizar currentPage en el componente padre
       this.handleSubmit();
     },
 
@@ -62,6 +63,7 @@ export default {
 
           const data = await response.json();
           this.$emit('search-results', data);
+          this.$emit('page-change',); // Emitir el evento page-change para actualizar la página actual en PageComponent
         }
         else {
           const response = await fetch(`http://localhost:9000/searchall/${this.currentPage}`, {
@@ -70,7 +72,6 @@ export default {
               'Content-Type': 'application/json',
             },
           });
-
 
           if (!response.ok) {
             throw new Error('Error en la solicitud');

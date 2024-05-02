@@ -1,14 +1,15 @@
 <template>
   <div class="bg-gray-200">
     <NavBar />
-    <SearchComponent :currentPage="currentPage" @search-results="handleSearchResults" />
-    <PageComponent :totalEmails="tableData.length" @page-change="currentPage = $event" />
+    <SearchComponent :currentPage="currentPage" @searching="handleSearching" @search-results="handleSearchResults" />
+    <PageComponent :totalEmails="tableData.length" :actualPage="currentPage" @page-reset="handleSearching"
+      @page-change="currentPage = $event" />
     <div class="flex flex-col mine:flex-row">
       <TableComponent :items="tableData" @show-body="showBody" @delete-item="deleteItem" />
       <BodyComponent :bodyContent="bodyContent" />
     </div>
 
-    
+
   </div>
 </template>
 
@@ -37,6 +38,12 @@ export default {
     };
   },
   methods: {
+
+    handleSearching() {
+      // Cuando se realiza una búsqueda, establecer currentPage en 1
+      this.currentPage = 1;
+    },
+
     showBody(body) {
       this.bodyContent = body;
     },
