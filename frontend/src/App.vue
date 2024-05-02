@@ -1,11 +1,14 @@
 <template>
   <div class="bg-gray-200">
     <NavBar />
-    <SearchComponent @search-results="handleSearchResults" />
+    <SearchComponent :currentPage="currentPage" @search-results="handleSearchResults" />
+    <PageComponent :totalEmails="tableData.length" @page-change="currentPage = $event" />
     <div class="flex flex-col mine:flex-row">
       <TableComponent :items="tableData" @show-body="showBody" @delete-item="deleteItem" />
       <BodyComponent :bodyContent="bodyContent" />
     </div>
+
+    
   </div>
 </template>
 
@@ -14,6 +17,7 @@ import NavBar from './components/Navbar.vue'
 import TableComponent from './components/TableComponent.vue'
 import SearchComponent from './components/SearchComponent.vue'
 import BodyComponent from './components/BodyComponent.vue'
+import PageComponent from './components/PageComponent.vue'
 
 export default {
   name: 'App',
@@ -22,19 +26,22 @@ export default {
     SearchComponent,
     TableComponent,
     BodyComponent,
+    PageComponent
+
   },
   data() {
     return {
-      bodyContent: '', // Inicializamos bodyContent como una cadena vacía
-      tableData: [], // Inicializamos tableData como un arreglo vacío para almacenar los datos de la tabla
+      bodyContent: '',
+      tableData: [],
+      currentPage: 1,
     };
   },
   methods: {
     showBody(body) {
-      this.bodyContent = body; // Actualizamos el valor de bodyContent con el cuerpo del mensaje
+      this.bodyContent = body;
     },
     handleSearchResults(results) {
-      this.tableData = results; // Actualizamos tableData con los resultados de la búsqueda
+      this.tableData = results;
     },
     async deleteItem(id) {
       try {
@@ -44,7 +51,6 @@ export default {
         if (!response.ok) {
           throw new Error('Error al eliminar el elemento');
         }
-        // Actualizar la lista de elementos después de eliminar
         this.tableData = this.tableData.filter(item => item._id !== id);
       } catch (error) {
         console.error(error);

@@ -22,3 +22,8 @@ type Metadata struct {
 	XOrigin                 string `json:"X-Origin"`
 	XFileName               string `json:"X-FileName"`
 }
+
+type Emails struct {
+	Total  int     `json:"total"`
+	Emails []Email `json:"emails"`
+} // Definición de la estructura Emails

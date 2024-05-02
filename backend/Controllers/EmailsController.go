@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/go-chi/chi"
@@ -16,9 +17,8 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// carga las variables de entorno del archivo .env
+// loadEnv carga las variables de entorno del archivo .env
 func loadEnv() {
-
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error al cargar el archivo .env")
@@ -34,8 +34,25 @@ func SearchEmail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	page := chi.URLParam(r, "page")
+
 	// Obtener el valor del parámetro 'term'
 	term := requestData["term"]
+
+	pageInt, err:= strconv.Atoi(page)	
+	if err != nil {
+		http.Error(w, "Error al convertir el número de página", http.StatusInternalServerError)
+		return
+	}
+
+	if pageInt > 0 {
+		pageInt--
+		fmt.Print("Esta es la pagina : ", pageInt)
+		pageInt = pageInt * 20
+
+	}	
+	page = strconv.Itoa(pageInt)
+
 
 	// Cargar variables de entorno
 	loadEnv()
@@ -48,16 +65,17 @@ func SearchEmail(w http.ResponseWriter, r *http.Request) {
 
 	query := fmt.Sprintf(`{
         "search_type": "querystring",
-        "query":
-        {
+        "query": {
             "term": "%s"
         },
-        "from": 0,
+        "from": %s,
         "max_results": 20,
         "_source": [
-            "_id", "From", "To", "Subject","Metadata", "Message"
+            "_id", "From", "To", "Subject", "Metadata", "Message"
         ]
-    }`, term)
+    }`, term, page)
+
+	fmt.Println("Este es el query : ", query)
 
 	req, err := http.NewRequest("POST", apiURL+indexName+"/_search", strings.NewReader(query))
 	if err != nil {
@@ -81,10 +99,31 @@ func SearchEmail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Extraer los correos electrónicos de la respuesta
-	emails := make([]Models.Email, 0)
-	hits := responseData["hits"].(map[string]interface{})
-	hitsArray := hits["hits"].([]interface{})
+	// Verificar si el campo "hits" está presente en la respuesta
+	hitsData, ok := responseData["hits"].(map[string]interface{})
+	if !ok || hitsData == nil {
+		http.Error(w, "El campo 'hits' en la respuesta está vacío o no está presente", http.StatusInternalServerError)
+		return
+	}
+
+	// Obtener el total de correos electrónicos
+	totalHits, ok := hitsData["total"].(map[string]interface{})
+	if !ok {
+		http.Error(w, "Error al obtener el número total de correos electrónicos", http.StatusInternalServerError)
+		return
+	}
+
+	// Extraer el valor de "value" si existe
+	value, ok := totalHits["value"].(float64)
+	if !ok {
+		http.Error(w, "Error al convertir el número total de correos electrónicos", http.StatusInternalServerError)
+		return
+	}
+
+	emails := Models.Emails{}
+	emails.Total = int(value)
+
+	hitsArray := hitsData["hits"].([]interface{})
 	for _, hit := range hitsArray {
 		hitMap := hit.(map[string]interface{})
 		source := hitMap["_source"].(map[string]interface{})
@@ -95,11 +134,10 @@ func SearchEmail(w http.ResponseWriter, r *http.Request) {
 		Metadata := source["Metadata"].(map[string]interface{})
 		Message := source["Message"].(string)
 
-		// Crear una instancia de Email y agregarla a la lista de correos electrónicos
 		email := Models.Email{
-			Id:      _id,
-			From:    from,
-			To:      to,
+			Id:   _id,
+			From: from,
+			To:   to,
 			Subject: subject,
 			Metadata: Models.Metadata{
 				MimeVersion:             Metadata["Mime-Version"].(string),
@@ -113,10 +151,9 @@ func SearchEmail(w http.ResponseWriter, r *http.Request) {
 				XOrigin:                 Metadata["X-Origin"].(string),
 				XFileName:               Metadata["X-FileName"].(string),
 			},
-			
-			Message:    Message,
+			Message: Message,
 		}
-		emails = append(emails, email)
+		emails.Emails = append(emails.Emails, email)
 	}
 
 	// Codificar la lista de correos electrónicos como JSON y escribir en el cuerpo de la respuesta HTTP
@@ -124,7 +161,7 @@ func SearchEmail(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(emails)
 }
 
-// SearchEmail realiza una búsqueda de emails
+// SearchAllEmails realiza una búsqueda de todos los correos electrónicos
 func SearchAllEmails(w http.ResponseWriter, r *http.Request) {
 	// Cargar variables de entorno
 	loadEnv()
@@ -135,14 +172,36 @@ func SearchAllEmails(w http.ResponseWriter, r *http.Request) {
 	zincPassword := os.Getenv("ZINC_PASSWORD")
 	indexName := os.Getenv("INDEX_NAME")
 
+	page := chi.URLParam(r, "page")
+
+
+	pageInt, err:= strconv.Atoi(page)
+	if err != nil {
+		http.Error(w, "Error al convertir el número de página", http.StatusInternalServerError)
+		return
+	}
+
+	if pageInt > 0 {
+		pageInt--
+		fmt.Print("Esta es la pagina : ", pageInt)
+		pageInt = pageInt * 20
+
+	}
+
+	page = strconv.Itoa(pageInt)
+	
+
+
 	query := fmt.Sprintf(`{
         "search_type": "alldocuments",
-        "from": 0,
+        "from": %s,
         "max_results": 20,
         "_source": [
-            "_id", "From", "To", "Subject","Metadata", "Message"
+            "_id", "From", "To", "Subject", "Metadata", "Message"
         ]
-    }`)
+    }`, page)
+
+	fmt.Println("Este es el query : ", query)
 
 	req, err := http.NewRequest("POST", apiURL+indexName+"/_search", strings.NewReader(query))
 	if err != nil {
@@ -166,10 +225,31 @@ func SearchAllEmails(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Extraer los correos electrónicos de la respuesta
-	emails := make([]Models.Email, 0)
-	hits := responseData["hits"].(map[string]interface{})
-	hitsArray := hits["hits"].([]interface{})
+	// Verificar si el campo "hits" está presente en la respuesta
+	hitsData, ok := responseData["hits"].(map[string]interface{})
+	if !ok || hitsData == nil {
+		http.Error(w, "El campo 'hits' en la respuesta está vacío o no está presente", http.StatusInternalServerError)
+		return
+	}
+
+	// Obtener el total de correos electrónicos
+	totalHits, ok := hitsData["total"].(map[string]interface{})
+	if !ok {
+		http.Error(w, "Error al obtener el número total de correos electrónicos", http.StatusInternalServerError)
+		return
+	}
+
+	// Extraer el valor de "value" si existe
+	value, ok := totalHits["value"].(float64)
+	if !ok {
+		http.Error(w, "Error al convertir el número total de correos electrónicos", http.StatusInternalServerError)
+		return
+	}
+
+	emails := Models.Emails{}
+	emails.Total = int(value)
+
+	hitsArray := hitsData["hits"].([]interface{})
 	for _, hit := range hitsArray {
 		hitMap := hit.(map[string]interface{})
 		source := hitMap["_source"].(map[string]interface{})
@@ -180,11 +260,10 @@ func SearchAllEmails(w http.ResponseWriter, r *http.Request) {
 		Metadata := source["Metadata"].(map[string]interface{})
 		Message := source["Message"].(string)
 
-		// Crear una instancia de Email y agregarla a la lista de correos electrónicos
 		email := Models.Email{
-			Id:      _id,
-			From:    from,
-			To:      to,
+			Id:   _id,
+			From: from,
+			To:   to,
 			Subject: subject,
 			Metadata: Models.Metadata{
 				MimeVersion:             Metadata["Mime-Version"].(string),
@@ -198,9 +277,9 @@ func SearchAllEmails(w http.ResponseWriter, r *http.Request) {
 				XOrigin:                 Metadata["X-Origin"].(string),
 				XFileName:               Metadata["X-FileName"].(string),
 			},
-			Message:    Message,
+			Message: Message,
 		}
-		emails = append(emails, email)
+		emails.Emails = append(emails.Emails, email)
 	}
 
 	// Codificar la lista de correos electrónicos como JSON y escribir en el cuerpo de la respuesta HTTP
@@ -208,66 +287,49 @@ func SearchAllEmails(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(emails)
 }
 
+// DeleteEmail elimina un correo electrónico por su ID
 func DeleteEmail(w http.ResponseWriter, r *http.Request) {
-	// Código para eliminar un correo electrónico
-
 	//Obtener el id del correo a eliminar
 	id := chi.URLParam(r, "id")
 
-	//Imprimir el id del correo a eliminar
-	fmt.Println(id)
-
 	// Cargar variables de entorno
-
 	loadEnv()
 
 	// Leer las variables de entorno
-
 	apiURL := os.Getenv("API_URL")
 	zincUser := os.Getenv("ZINC_USER")
 	zincPassword := os.Getenv("ZINC_PASSWORD")
 	indexName := os.Getenv("INDEX_NAME")
 
 	// Crear la solicitud HTTP DELETE
-
 	req, err := http.NewRequest("DELETE", apiURL+indexName+"/_doc/"+id, nil)
-
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// Establecer la autenticación básica en la solicitud HTTP
-
 	req.SetBasicAuth(zincUser, zincPassword)
 
 	// Realizar la solicitud HTTP
-
 	resp, err := http.DefaultClient.Do(req)
-
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	defer resp.Body.Close()
 
 	// Leer la respuesta HTTP
-
 	body, err := ioutil.ReadAll(resp.Body)
-
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// Imprimir el código de estado y el cuerpo de la respuesta HTTP
-
 	fmt.Println(resp.StatusCode)
 	fmt.Println(string(body))
 
 	// Escribir el código de estado en la respuesta HTTP
-
 	w.WriteHeader(resp.StatusCode)
 
 	// Escribir el cuerpo de la respuesta HTTP
-
 	w.Write(body)
 }

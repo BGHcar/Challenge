@@ -1,5 +1,5 @@
 <template>
-  <form class="w-full px-4" @submit.prevent="handleSubmit">
+  <form class="w-full px-4" @submit.prevent="isSearchin">
     <div>
       <input type="text" name="q"
         class="w-full border h-12 shadow p-4 rounded-full dark:text-gray-800 dark:border-gray-700 dark:bg-gray-200"
@@ -20,46 +20,66 @@
 <script>
 export default {
   name: 'SearchComponent',
+  props: ['currentPage'],
   data() {
     return {
       query: '',
+      booleanSearch: false,
     };
   },
-  created() {
-    this.fetchData();
+  watch: {
+    currentPage: {
+      immediate: true,
+      handler() {
+        // Cuando currentPage cambia, llamar a handleSubmit
+        this.handleSubmit();
+      }
+    }
   },
   methods: {
-    async fetchData() {
-      try {
-        const response = await fetch('http://localhost:9000/searchall');
-        if (!response.ok) {
-          throw new Error('Error en la solicitud');
-        }
-        const data = await response.json();
-        this.$emit('search-results', data); // Emitir los resultados de la búsqueda al componente padre
-      } catch (error) {
-        console.error(error);
-      }
+    async isSearchin() {
+      this.booleanSearch = true;
+      this.handleSubmit();
     },
+
     async handleSubmit() {
       // Realizar la solicitud POST con los datos de búsqueda
       try {
-        const response = await fetch('http://localhost:9000/search', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            term: this.query,
-          }),
-        });
+        if (this.booleanSearch) {
+          const response = await fetch(`http://localhost:9000/search/${this.currentPage}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              term: this.query,
+            }),
+          });
 
-        if (!response.ok) {
-          throw new Error('Error en la solicitud');
+          if (!response.ok) {
+            throw new Error('Error en la solicitud');
+          }
+
+          const data = await response.json();
+          this.$emit('search-results', data);
         }
+        else {
+          const response = await fetch(`http://localhost:9000/searchall/${this.currentPage}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
 
-        const data = await response.json();
-        this.$emit('search-results', data); // Emitir los resultados de la búsqueda al componente padre
+
+          if (!response.ok) {
+            throw new Error('Error en la solicitud');
+          }
+
+          const data = await response.json();
+          this.$emit('search-results', data);
+        }
+        // Emitir los resultados de la búsqueda al componente padre
       } catch (error) {
         console.error(error);
       }

@@ -1,6 +1,7 @@
 <template>
   <div class="w-full overflow-auto min-w-[100%] mine:max-w-[50%] mine:min-w-[50%]">
-    <table class="text-[12px] flex-col flex-grow min-w-[98%] divide-gray-200 border m-2 border-gray-300 shadow-lg bg-gray-100">
+    <table
+      class="text-[12px] flex-col flex-grow min-w-[98%] divide-gray-200 border m-2 border-gray-300 shadow-lg bg-gray-100">
       <!-- Encabezado de la tabla -->
       <thead class="bg-gray-50 divide-y">
         <tr class="text-left">
@@ -12,16 +13,18 @@
       </thead>
       <!-- Cuerpo de la tabla -->
       <tbody class=" divide-y divide-gray-200 ">
-        <tr class="hover:bg-indigo-200" v-for="(item, index) in items" :key="index">
+        <tr class="hover:bg-indigo-200" v-for="(item, index) in items.emails" :key="index">
           <td class="border px-3 py-2">{{ item.From }}</td>
           <td class="border px-3 py-2">{{ item.To }}</td>
           <td class="border px-3 py-2">{{ item.Subject }}</td>
-          <td class="border px-3 py-2">
-            <button class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 w-[100px] mr-2 rounded"
-              @click="showBodyHandler(item.Message, console.log(item._id))">
+          <td class="border px-3 py-2 flex justify-center">
+            <!-- Usar item.Message directamente en lugar de item.emails[Message] -->
+            <button class="bg-indigo-500 focus:ring-4 hover:bg-indigo-700 text-white font-bold py-2 w-[100px] mr-2 rounded mb-2"
+              @click="isDataShow(this.showDate, item) ">
               VIEW
             </button>
-            <button class="bg-gray-500 hover:bg-gray-700 text-white py-2 w-[100px] font-bold rounded"
+            <!-- Pasar solo el ID del correo electrónico a confirmDelete -->
+            <button class="bg-gray-500 focus:ring-4 hover:bg-gray-700 text-white py-2 w-[100px] mb-2 font-bold rounded"
               @click="confirmDelete(item._id)">
               DELETE
             </button>
@@ -47,8 +50,8 @@
               <div
                 class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
                 <!-- Heroicon name: outline/exclamation -->
-                <svg class="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none"
-                  viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <svg class="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor" aria-hidden="true">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M12 9v2m0 4h.01M12 17h.01M3 4h18a2 2 0 012 2v12a2 2 0 01-2 2H3a2 2 0 01-2-2V6a2 2 0 012-2z" />
                 </svg>
@@ -66,10 +69,12 @@
             </div>
           </div>
           <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-            <button type="button" @click="deleteItem" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm">
+            <button type="button" @click="deleteItem"
+              class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm">
               Delete
             </button>
-            <button type="button" @click="closeModal" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+            <button type="button" @click="closeModal"
+              class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
               Cancel
             </button>
           </div>
@@ -88,9 +93,24 @@ export default {
     return {
       showModal: false, // Controla la visibilidad del modal
       itemIdToDelete: null, // Almacena el ID del elemento a eliminar
+      showDate: false,  // Controla la visibilidad del cuerpo del mensaje
+      messageId: '',  // Almacena el ID del mensaje actual
     };
   },
   methods: {
+
+    isDataShow(flag, body) {
+      if (!flag || this.messageId !== body._id) {
+        this.messageId = body._id;
+        this.showDate = true;
+        this.showBodyHandler(body.Message);
+      } else {
+        this.showBodyHandler('');
+        this.showDate = false;
+      }
+
+    },
+
     showBodyHandler(body) {
       this.$emit('show-body', body);
     },
