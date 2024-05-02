@@ -51,18 +51,25 @@ export default {
       this.tableData = results;
     },
     async deleteItem(id) {
-      try {
-        const response = await fetch(`http://localhost:9000/delete/${id}`, {
-          method: 'DELETE'
-        });
-        if (!response.ok) {
-          throw new Error('Error al eliminar el elemento');
-        }
-        this.tableData = this.tableData.filter(item => item._id !== id);
-      } catch (error) {
-        console.error(error);
-      }
+  try {
+    const response = await fetch(`http://localhost:9000/delete/${id}`, {
+      method: 'DELETE'
+    });
+    if (!response.ok) {
+      throw new Error('Error al eliminar el elemento');
     }
+    // Agregar control de tipo para asegurarse de que tableData sea un array
+    if (Array.isArray(this.tableData.emails)) {
+      this.tableData.emails = this.tableData.emails.filter(item => item._id !== id);
+    } else {
+      console.log(this.tableData.emails);
+      console.error('tableData is not an array');
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}
+
   },
 }
 </script>
