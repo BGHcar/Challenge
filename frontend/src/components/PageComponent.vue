@@ -2,8 +2,7 @@
   <div>
     <!-- Botones de paginación -->
     <div class="flex justify-center items-center mt-4 mb-4">
-      <button class="bg-indigo-200 rounded-lg hover:bg-indigo-400 mx-4 p-4" @click="previousPage"
-        :disabled="currentPage === 1">Anterior</button>
+      <button class="bg-indigo-200 rounded-lg hover:bg-indigo-400 mx-4 p-4" @click="previousPage">Anterior</button>
       <span v-for="pageNumber in visiblePageNumbers" :key="pageNumber">
         <button class="mx-2 p-2"
           :class="{ 'font-bold text-indigo-800': parseInt(pageNumber) === parseInt(this.currentPage) }"
@@ -11,27 +10,25 @@
       </span>
       <button class="bg-indigo-200 rounded-lg hover:bg-indigo-400 mx-4 p-4" @click="nextPage">Siguiente</button>
     </div>
-    LOCAL
-    <span>{{ currentPage }}</span>
-    ORIGINAL
-    <span>{{ actualPage }}</span>
   </div>
 </template>
 
 <script>
 
+
 export default {
   name: 'PageComponent',
-  props: ['totalEmails', 'pageSize', 'actualPage'],
+  props: ['pageSize', 'actualPage'],
 
   data() {
     return {
-      currentPage: parseInt(this.actualPage)
+      currentPage: parseInt(this.actualPage),
     };
   },
   computed: {
     visiblePageNumbers() {
-      const totalPages = Math.ceil(this.totalEmails / this.pageSize);
+      const totalPages = Math.ceil(this.pageSize);
+      console.log(totalPages);
       return this.generatePageNumbers(totalPages);
     },
   },
@@ -48,8 +45,10 @@ export default {
       }
     },
     async nextPage() {
+      if (this.currentPage < this.pageSize){
       this.currentPage++;
       this.$emit('page-change', this.currentPage);
+      }
     },
     async previousPage() {
       if (this.currentPage > 1) {
@@ -71,7 +70,6 @@ export default {
     actualPage: {
       immediate: true, // Para que se ejecute la primera vez
       handler(newVal) {
-        console.log('actualPage changed to:', newVal);
         this.currentPage = parseInt(newVal); // Asegúrate de convertir newVal a entero
       }
     }

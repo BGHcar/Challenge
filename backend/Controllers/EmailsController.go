@@ -180,7 +180,6 @@ func SearchAllEmails(w http.ResponseWriter, r *http.Request) {
 
 	if pageInt > 0 {
 		pageInt--
-		fmt.Print("Esta es la pagina : ", pageInt)
 		pageInt = pageInt * 20
 
 	}
@@ -197,8 +196,6 @@ func SearchAllEmails(w http.ResponseWriter, r *http.Request) {
             "_id", "From", "To", "Subject", "Metadata", "Message"
         ]
     }`, page)
-
-	fmt.Println("Este es el query : ", query)
 
 	req, err := http.NewRequest("POST", apiURL+indexName+"/_search", strings.NewReader(query))
 	if err != nil {
