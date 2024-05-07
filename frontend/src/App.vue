@@ -2,7 +2,7 @@
   <div class="bg-gray-200">
     <NavBar />
     <SearchComponent :currentPage="currentPage" @searching="handleSearching" @search-results="handleSearchResults" />
-    <PageComponent :totalEmails="tableData.length" :actualPage="currentPage" @page-reset="handleSearching"
+    <PageComponent :pageSize="totalPage" :actualPage="currentPage" @page-reset="handleSearching"
       @page-change="currentPage = $event" />
     <div class="flex flex-col mine:flex-row">
       <TableComponent :items="tableData" @show-body="showBody" @delete-item="deleteItem" />
@@ -34,7 +34,9 @@ export default {
     return {
       bodyContent: '',
       tableData: [],
+      totalPage: 0,
       currentPage: 1,
+      API_URL:process.env.VUE_APP_PATH_START,
     };
   },
   methods: {
@@ -49,10 +51,17 @@ export default {
     },
     handleSearchResults(results) {
       this.tableData = results;
+      this.totalPage = results.total;
+      if (results.total % 20){
+        this.totalPage = Math.floor(results.total / 20) + 1;
+      }
+      else{
+        this.totalPage = results.total / 20;
+      }
     },
     async deleteItem(id) {
   try {
-    const response = await fetch(`http://localhost:9000/delete/${id}`, {
+    const response = await fetch(`${this.API_URL}delete/${id}`, {
       method: 'DELETE'
     });
     if (!response.ok) {
