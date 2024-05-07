@@ -61,8 +61,8 @@ export default {
     // Agregar control de tipo para asegurarse de que tableData sea un array
     if (Array.isArray(this.tableData.emails)) {
       this.tableData.emails = this.tableData.emails.filter(item => item._id !== id);
+      console.log('Email eliminado');
     } else {
-      console.log(this.tableData.emails);
       console.error('tableData is not an array');
     }
   } catch (error) {

@@ -122,7 +122,6 @@ export default {
     deleteItem() {
       // Emitir evento para solicitar eliminación al componente padre
       this.$emit('delete-item', this.itemIdToDelete);
-      console.log(this.itemIdToDelete);
       // Ocultar el modal de confirmación
       this.showModal = false;
     },

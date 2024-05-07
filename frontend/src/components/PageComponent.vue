@@ -11,10 +11,6 @@
       </span>
       <button class="bg-indigo-200 rounded-lg hover:bg-indigo-400 mx-4 p-4" @click="nextPage">Siguiente</button>
     </div>
-    LOCAL
-    <span>{{ currentPage }}</span>
-    ORIGINAL
-    <span>{{ actualPage }}</span>
   </div>
 </template>
 
@@ -71,7 +67,6 @@ export default {
     actualPage: {
       immediate: true, // Para que se ejecute la primera vez
       handler(newVal) {
-        console.log('actualPage changed to:', newVal);
         this.currentPage = parseInt(newVal); // Asegúrate de convertir newVal a entero
       }
     }

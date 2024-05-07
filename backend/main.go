@@ -14,7 +14,7 @@ func main() {
 
     // Configurar el middleware CORS
     cors := cors.New(cors.Options{
-        AllowedOrigins:   []string{"http://localhost:8081"}, // Permitir solicitudes desde este origen
+        AllowedOrigins:   []string{"http://localhost:8080"}, // Permitir solicitudes desde este origen
         AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}, // Métodos permitidos
         AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"}, // Cabeceras permitidas
         AllowCredentials: true, // Permitir enviar credenciales (cookies)

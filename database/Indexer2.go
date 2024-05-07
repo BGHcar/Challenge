@@ -107,12 +107,13 @@ func main() {
 
 			// Incrementar el contador de correos procesados
 			count++
+			fmt.Printf("Procesando correo electrónico %d\n", count)
 
 			// Agregar el correo electrónico al slice de registros
 			emailData.Records = append(emailData.Records, email)
 
 			// Si el número de correos procesados alcanza un límite (por ejemplo, 100), enviar los datos a la API
-			if count%30000 == 0 {
+			if count%10000 == 0 {
 				// Asignar el nombre del índice al objeto EmailData
 				emailData.Index = indexName
 				fmt.Printf("Procesando correo electrónico %d: \n", count)
