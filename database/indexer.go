@@ -10,6 +10,8 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+	
+	"github.com/pkg/profile"
 
 	"github.com/joho/godotenv"
 	_ "net/http/pprof" // Importar el paquete pprof
@@ -49,6 +51,7 @@ type EmailData struct {
 }
 
 func main() {
+	defer profile.Start(profile.CPUProfile, profile.ProfilePath(".")).Stop()
 	start := time.Now() // Iniciar el temporizador
 
 	// Cargar las variables de entorno desde el archivo .env

@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+	"github.com/pkg/profile"
 
 	"github.com/joho/godotenv"
 	_ "net/http/pprof" // Importar para habilitar el profiling mediante net/http/pprof
@@ -55,6 +56,7 @@ type EmailData struct {
 }
 
 func main() {
+	defer profile.Start(profile.CPUProfile, profile.ProfilePath(".")).Stop()
 	// Iniciar el profiling
 	go func() {
 		fmt.Println("Profiling server listening on http://localhost:6060/debug/pprof/")
